@@ -2,6 +2,8 @@ package com.toffy.firstproject.Controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,13 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.toffy.firstproject.models.Department;
 import com.toffy.firstproject.models.Employee;
 import com.toffy.firstproject.services.DepartmentService;
+import com.toffy.firstproject.services.EmployeeService;
 
 @RestController
 @CrossOrigin("*")
 public class DepartmentController {
 	
 	@Autowired
+	private EmployeeService employeeService;
+	@Autowired
 	private DepartmentService departmentService;
+
 	@PostMapping(value = "saveDepartment")
 	public String addNewemployee(@RequestBody Department department) {
 		System.out.println("At Controller Add");
@@ -49,6 +55,14 @@ public class DepartmentController {
 	public List<Employee> findDepartmentEmployees(@PathVariable("department") String department){
 		Department dep = departmentService.findDepartmentByName(department);
 		return dep.getEmployees();
+	}
+	@PostMapping(value="/addEmployee/{id}")
+	public String addEmployee(@Valid@RequestParam("employeeid") Long id,@PathVariable("id") Long departmentId) {
+		Department dep = departmentService.findDepartment(departmentId);
+		Employee employee = employeeService.findEmployee(id);
+		dep.getEmployees().add(employee);
+		departmentService.createDepartment(dep);
+		return "Employee was Added Successfully";
 	}
 
 

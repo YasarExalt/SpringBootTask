@@ -3,6 +3,7 @@ package com.toffy.firstproject.models;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,12 +13,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
@@ -33,13 +34,15 @@ public class Department {
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date updatedAt;
     @ManyToMany(fetch = FetchType.LAZY)
-    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
         name = "employees_departments", 
         joinColumns = @JoinColumn(name = "deparment_id"), 
         inverseJoinColumns = @JoinColumn(name = "employee_id")
     )
     private List<Employee> employees;
+
+    @OneToOne(mappedBy="department", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    private Employee manager;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name="employee_id")
@@ -50,6 +53,20 @@ public class Department {
 
 	
 	
+
+	public Employee getManager() {
+		return manager;
+	}
+
+
+
+
+	public void setManager(Employee manager) {
+		this.manager = manager;
+	}
+
+
+
 
 	public Department(String name) {
 		this.name = name;

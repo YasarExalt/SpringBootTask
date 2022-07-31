@@ -13,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.toffy.firstproject.dto.SalaryDTO;
 import com.toffy.firstproject.models.Employee;
 import com.toffy.firstproject.repositories.EmployeeRepository;
 
@@ -22,9 +21,6 @@ import com.toffy.firstproject.repositories.EmployeeRepository;
 @Transactional
 public class EmployeeService {
 	
-    @Autowired
-    private ModelMapper modelMapper;
-
     @Autowired 
     EmployeeRepository employeeRepo;
     private static final int PAGE_SIZE = 2;
@@ -81,14 +77,6 @@ public class EmployeeService {
     	}
     
     }
-    
-    private SalaryDTO convertEntityToDto(Employee employee){
-        modelMapper.getConfiguration()
-                .setMatchingStrategy(MatchingStrategies.LOOSE);
-        SalaryDTO salaryDTO = new SalaryDTO();
-        salaryDTO = modelMapper.map(employee, SalaryDTO.class);
-        return salaryDTO;
-    }
-
+   
 
 }

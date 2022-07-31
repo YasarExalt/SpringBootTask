@@ -1,8 +1,8 @@
 package com.toffy.firstproject.Controller;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.toffy.firstproject.models.Department;
 import com.toffy.firstproject.models.Employee;
+import com.toffy.firstproject.services.DepartmentService;
 import com.toffy.firstproject.services.EmployeeService;
 
 @RestController
@@ -24,6 +26,8 @@ public class EmployeeController {
 	
 	@Autowired
 	private EmployeeService employeeService;
+	@Autowired
+	private DepartmentService departmentService;
 	@PostMapping(value = "saveEmployee")
 	public String addNewemployee(@RequestBody Employee employment) {
 		System.out.println("At Controller Add");
@@ -55,25 +59,13 @@ public class EmployeeController {
 	public List<Employee> findEmployeeByRole(@PathVariable("role") String role){
 		return employeeService.findEmployeesByRole(role);
 	}
-
-    @GetMapping("/users-current-salary")
-    public int getUserCurrentSalary(@RequestParam Long id){
-    	Employee employee = employeeService.findEmployee(id);
-    	if(employee!=null) {
-    		int baserSalary = employee.getBaseSalary();
-    		LocalDate localDate = LocalDate.now();
-    		LocalDate hireDate = employee.getHireDate();
-
-            Period period = Period.between(hireDate, localDate);
-            System.out.print(period.getYears() + " years,");
-            
-    		if(period.getYears() >= 1 ) {
-    			int currentSalary = baserSalary + 200* (period.getYears());
-    			return currentSalary;
-    		}
-    		return baserSalary;
-    	}
-        return 0;
-    }
-
+	
+	@PostMapping(value="/addDepartment/{id}")
+	public String addDepartment(@Valid@RequestParam("departmentid") Long id,@PathVariable("id") Long employeeId) {
+		Department dep = departmentService.findDepartment(id);
+		Employee employee = employeeService.findEmployee(employeeId);
+		employee.getDepartments().add(dep);
+		employeeService.createEmployee(employee);
+		return "Department was Added Successfully";
+	}
 }

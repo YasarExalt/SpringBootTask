@@ -1,6 +1,7 @@
 package com.toffy.firstproject.models;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.Date;
 import java.util.List;
 
@@ -14,11 +15,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -36,12 +37,15 @@ public class Employee {
     private int age;
     private int phoneNumber;
     private int baseSalary;
+    @Transient
+    private int currentSalary;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate hireDate;
     @Column(updatable=false)
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date createdAt;
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+ 
+	@DateTimeFormat(pattern="yyyy-MM-dd")
     private Date updatedAt;
     @ManyToMany(fetch = FetchType.LAZY)
     @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
@@ -60,6 +64,24 @@ public class Employee {
 //    @OneToMany(mappedBy="employee", fetch = FetchType.LAZY)
 //    private List<Department> managedDepartments;
     
+	@OneToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="department_id")
+	private Department department;
+
+	public Department getDepartment() {
+		return department;
+	}
+
+
+
+
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
+
+
+
+
 	public Employee() {
 	}
 
@@ -265,7 +287,26 @@ public class Employee {
 		this.baseSalary = baseSalary;
 	}
 
+	   public int getCurrentSalary() {
+			return currentSalary;
+		}
 
+
+
+
+		public void setCurrentSalary(int currentSalary) {
+    		int baserSalary = this.getBaseSalary();
+    		LocalDate localDate = LocalDate.now();
+    		LocalDate hireDate = this.getHireDate();
+
+            Period period = Period.between(hireDate, localDate);
+            
+    		if(period.getYears() >= 1 ) {
+    			this.currentSalary = baserSalary + 200* (period.getYears());
+    		}else {
+    			this.currentSalary = baserSalary;
+    		}
+		}
 
 
 	public LocalDate getHireDate() {
