@@ -1,5 +1,6 @@
 package com.toffy.firstproject.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -34,6 +35,18 @@ public class EmployeeController {
 		employeeService.createEmployee(employment);
 		return "Added Successfully";
 	}
+	@PostMapping(value="/createEmployee")
+	public String createEmployee(@Valid@RequestParam("departmentid") Long id,@RequestBody Employee emp) {
+		Department dep = departmentService.findDepartment(id);
+		ArrayList<Department> departmentList = new ArrayList<Department>();
+		departmentList.add(dep);
+		emp.setDepartments(departmentList);
+		
+
+		employeeService.createEmployee(emp);
+		return "Employee was Added Successfully";
+	}
+
 	@PutMapping(value = "updateEmployee")
 	public String updateemployee(@RequestBody Employee employment) {
 		employeeService.updateEmployee(employment);
