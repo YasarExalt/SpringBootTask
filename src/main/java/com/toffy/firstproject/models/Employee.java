@@ -24,6 +24,9 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name="employees")
@@ -54,7 +57,9 @@ public class Employee {
         joinColumns = @JoinColumn(name = "employee_id"), 
         inverseJoinColumns = @JoinColumn(name = "deparment_id")
     )
-    private List<Department> departments;
+
+    @JsonIgnoreProperties("employees")
+	private List<Department> departments;
     
     
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -274,6 +279,16 @@ public class Employee {
 	}
 
 
+	public LocalDate getHireDate() {
+		return hireDate;
+	}
+
+
+
+
+	public void setHireDate(LocalDate hireDate) {
+		this.hireDate = hireDate;
+	}
 
 
 	public int getBaseSalary() {
@@ -288,37 +303,27 @@ public class Employee {
 	}
 
 	   public int getCurrentSalary() {
-			return currentSalary;
+		   if (currentSalary == 0) {
+			   setCurrentSalary(currentSalary);
+		   }
+		   return currentSalary;
 		}
 
 
 
 
 		public void setCurrentSalary(int currentSalary) {
-    		int baserSalary = this.getBaseSalary();
     		LocalDate localDate = LocalDate.now();
     		LocalDate hireDate = this.getHireDate();
-
-            Period period = Period.between(hireDate, localDate);
-            
-    		if(period.getYears() >= 1 ) {
-    			this.currentSalary = baserSalary + 200* (period.getYears());
+    		System.out.print(this.getHireDate());
+    		System.out.print(hireDate);
+    		if (hireDate != null) {
+    			Period period = Period.between(hireDate, localDate);
+        		this.currentSalary = this.baseSalary + 200 * (period.getYears());
     		}else {
-    			this.currentSalary = baserSalary;
+    			this.currentSalary = this.baseSalary;
     		}
 		}
-
-
-	public LocalDate getHireDate() {
-		return hireDate;
-	}
-
-
-
-
-	public void setHireDate(LocalDate hireDate) {
-		this.hireDate = hireDate;
-	}
 
 
 

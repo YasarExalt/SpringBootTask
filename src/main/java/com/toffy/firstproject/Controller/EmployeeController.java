@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,7 +59,7 @@ public class EmployeeController {
 		return "employee Deleted";
 	}
 	
-	@GetMapping(value = "findAllEmployee")
+	@GetMapping(value = "findAllEmployee", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<Employee> findAllemployee(){
 		return employeeService.getAllEmployees();
 	}

@@ -20,6 +20,9 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name="departments")
@@ -33,13 +36,15 @@ public class Department {
     private Date createdAt;
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date updatedAt;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "employees_departments", 
         joinColumns = @JoinColumn(name = "deparment_id"), 
         inverseJoinColumns = @JoinColumn(name = "employee_id")
     )
-    private List<Employee> employees;
+    @JsonIgnoreProperties("departments")
+	private List<Employee> employees;
 
     @OneToOne(mappedBy="department", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private Employee manager;
